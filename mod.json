@@ -9,6 +9,7 @@
 	"id": "alphalaneous.random_tab",
 	"name": "Random Tab",
 	"developer": "Alphalaneous",
+	"repository": "https://github.com/Alphalaneous/Random-Tab",
 	"dependencies": [
         {
             "id": "geode.node-ids",
