@@ -71,6 +71,8 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 			addSeparator = true;
 		}
 
+		m_searchInput->onClickTrackNode(false);
+
 		auto searchObject = GJSearchObject::create(SearchType::Type19, query.str());
 		auto browserLayer = LevelBrowserLayer::scene(searchObject);
 		auto transitionFade = CCTransitionFade::create(0.5, browserLayer);
