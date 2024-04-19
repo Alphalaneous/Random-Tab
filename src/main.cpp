@@ -21,7 +21,7 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 
 			auto followedButtonNew = CCMenuItemSpriteExtra::create(followedSprite, this, menu_selector(LevelSearchLayer::onFollowed));
 
-			followedButtonNew->setPosition(-winSize.width/2 + 30, -winSize.height/2 + 30);
+			auto bottomLeftMenu = this->getChildByIDRecursive("bottom-left-menu");
 
 			auto quickSearchMenu = this->getChildByIDRecursive("quick-search-menu");
 
@@ -36,9 +36,6 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 
 			randomButtonSprite->addChild(randomSprite);
 
-
-			//auto randomSprite = SearchButton::create("GJ_longBtn04_001.png", "Random", 112.5, "random.png"_spr);
-
 			auto randomTabButton = CCMenuItemSpriteExtra::create(randomButtonSprite, this, menu_selector(MyLevelSearchLayer::onRandom));
 
 			if(followedButton){
@@ -47,11 +44,13 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 			}
 
 			if(quickSearchMenu){
-				quickSearchMenu->addChild(followedButtonNew);
 				quickSearchMenu->addChild(randomTabButton);
 				quickSearchMenu->setZOrder(1);
 			}
-
+			if(bottomLeftMenu){
+				bottomLeftMenu->addChild(followedButtonNew);
+				bottomLeftMenu->updateLayout();
+			}
 
 		}
 		return true;
