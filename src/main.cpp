@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 
 class $modify(MyLevelSearchLayer, LevelSearchLayer) {
-
+	
 	bool init(int p0) {
 		if (!LevelSearchLayer::init(p0)) {
 			return false;
@@ -13,15 +13,7 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 
 		if(!p0){
 
-			auto followedButton = this->getChildByIDRecursive("followed-button");
-
 			auto winSize = CCDirector::sharedDirector()->getWinSize();
-
-			auto followedSprite = CCSprite::createWithSpriteFrameName("gj_heartOn_001.png");
-
-			auto followedButtonNew = CCMenuItemSpriteExtra::create(followedSprite, this, menu_selector(LevelSearchLayer::onFollowed));
-
-			auto bottomLeftMenu = this->getChildByIDRecursive("bottom-left-menu");
 
 			auto quickSearchMenu = this->getChildByIDRecursive("quick-search-menu");
 
@@ -38,20 +30,9 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 
 			auto randomTabButton = CCMenuItemSpriteExtra::create(randomButtonSprite, this, menu_selector(MyLevelSearchLayer::onRandom));
 
-			if(followedButton){
-				followedButton->setVisible(false);
-				randomTabButton->setPosition(followedButton->getPosition());
-			}
-
 			if(quickSearchMenu){
 				quickSearchMenu->addChild(randomTabButton);
-				quickSearchMenu->setZOrder(1);
 			}
-			if(bottomLeftMenu){
-				bottomLeftMenu->addChild(followedButtonNew);
-				bottomLeftMenu->updateLayout();
-			}
-
 		}
 		return true;
 	}

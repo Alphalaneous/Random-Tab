@@ -14,7 +14,12 @@
             "id": "geode.node-ids",
             "version": ">=v1.12.0-alpha.2",
             "importance": "required"
-        }
+        },
+		{
+			"id": "alphalaneous.pages_api",
+            "version": ">=v1.0.0",
+            "importance": "required"
+		}
     ],
 	"description": "Adds a random tab in search!",
 	"resources": {
