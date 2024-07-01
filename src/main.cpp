@@ -29,7 +29,14 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 		if(auto label = getChildByID("level-count-label")){
 			label->setVisible(false);
 		}
-
+		if(m_fields->m_isRandomTab){
+			if(m_list){
+				if(auto label = typeinfo_cast<CCLabelBMFont*>(m_list->getChildByID("title"))){
+					label->setString("Random Levels");
+				}
+			}
+		}
+		
 		CCSprite* bg = CCSprite::create("background.png"_spr);
 		bg->setUserObject("width", CCFloat::create(bg->getContentSize().width));
 		bg->setUserObject("height", CCFloat::create(bg->getContentSize().height));
