@@ -36,8 +36,8 @@ jobs:
         uses: geode-sdk/build-geode-mod@main
         
         with:
-          sdk: v3.1.1
-          cli: 'v3.0.0'
+          sdk: v3.4.0
+          cli: 'v3.2.0'
           combine: true
           target: ${{ matrix.config.target }}
           bindings: Alphalaneous/bindings
