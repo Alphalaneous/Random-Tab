@@ -2,6 +2,7 @@
 #include <Geode/modify/LevelSearchLayer.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
 #include <random>
+#include <alphalaneous.pages_api/include/PageMenu.h>
 
 using namespace geode::prelude;
 
@@ -171,6 +172,21 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 			if(quickSearchMenu){
 				quickSearchMenu->addChild(randomTabButton);
 			}
+
+			RowLayout* layout = RowLayout::create();
+            layout->setGrowCrossAxis(true);
+            layout->setCrossAxisOverflow(false);
+            layout->setAxisAlignment(AxisAlignment::Center);
+            layout->setCrossAxisAlignment(AxisAlignment::Center);
+            layout->ignoreInvisibleChildren(true);
+
+            quickSearchMenu->setContentSize({365, 116});
+            quickSearchMenu->ignoreAnchorPointForPosition(false);
+            quickSearchMenu->setPosition({quickSearchMenu->getPosition().x, quickSearchMenu->getPosition().y + 28});
+
+            PageMenu* menuPage = PageMenu::create(typeinfo_cast<CCMenu*>(quickSearchMenu), layout, 9);
+
+            addChild(menuPage);
 		}
 		return true;
 	}
