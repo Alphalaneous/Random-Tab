@@ -182,8 +182,6 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 
             quickSearchMenu->setContentSize({365, 116});
             quickSearchMenu->ignoreAnchorPointForPosition(false);
-			
-            CCSize winSize = CCDirector::get()->getWinSize();
             quickSearchMenu->setPosition({quickSearchMenu->getPosition().x, winSize.height/2 + 28});
 
             PageMenu* menuPage = PageMenu::create(typeinfo_cast<CCMenu*>(quickSearchMenu), layout, 9);
