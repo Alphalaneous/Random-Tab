@@ -5,7 +5,7 @@
 		"android": "2.2074",
 		"mac": "2.2074"
 	},
-	"version": "v1.1.12",
+	"version": "v1.1.13",
 	"id": "alphalaneous.random_tab",
 	"name": "Random Tab",
 	"developer": "Alphalaneous",
@@ -18,7 +18,7 @@
         },
 		{
 			"id": "alphalaneous.pages_api",
-            "version": ">=v1.4.0",
+            "version": ">=v1.4.1",
             "importance": "required"
 		}
     ],
