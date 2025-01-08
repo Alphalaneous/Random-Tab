@@ -160,7 +160,7 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 			
 			auto randomSprite = CCSprite::create("random.png"_spr);
 
-			auto oldSprite = dynamic_cast<CCSprite*>(randomButtonSprite->getChildren()->objectAtIndex(1));
+			auto oldSprite = typeinfo_cast<CCSprite*>(randomButtonSprite->getChildren()->objectAtIndex(1));
 			oldSprite->setVisible(false);
 
 			randomSprite->setPosition(oldSprite->getPosition());
@@ -183,10 +183,9 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
             quickSearchMenu->setContentSize({365, 116});
             quickSearchMenu->ignoreAnchorPointForPosition(false);
             quickSearchMenu->setPosition({quickSearchMenu->getPosition().x, winSize.height/2 + 28});
+            quickSearchMenu->setLayout(layout);
 
-            PageMenu* menuPage = PageMenu::create(typeinfo_cast<CCMenu*>(quickSearchMenu), layout, 9);
-
-            addChild(menuPage);
+            static_cast<PageMenu*>(quickSearchMenu)->setPaged(9, PageOrientation::HORIZONTAL, 422);
 		}
 		return true;
 	}

@@ -1,11 +1,11 @@
 {
-	"geode": "4.0.1",
+	"geode": "4.1.1",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
 		"mac": "2.2074"
 	},
-	"version": "v1.1.11",
+	"version": "v1.1.12",
 	"id": "alphalaneous.random_tab",
 	"name": "Random Tab",
 	"developer": "Alphalaneous",
@@ -13,12 +13,12 @@
 	"dependencies": [
         {
             "id": "geode.node-ids",
-            "version": ">=v1.15.0",
+            "version": ">=v1.18.0",
             "importance": "required"
         },
 		{
 			"id": "alphalaneous.pages_api",
-            "version": ">=v1.3.0",
+            "version": ">=v1.4.0",
             "importance": "required"
 		}
     ],
