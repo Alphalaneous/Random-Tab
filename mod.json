@@ -1,11 +1,11 @@
 {
-	"geode": "4.1.1",
+	"geode": "4.2.0",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
 		"mac": "2.2074"
 	},
-	"version": "v1.1.13",
+	"version": "v1.1.14",
 	"id": "alphalaneous.random_tab",
 	"name": "Random Tab",
 	"developer": "Alphalaneous",
@@ -32,5 +32,8 @@
         "homepage": "https://linktr.ee/Alphalaneous",
         "source": "https://github.com/Alphalaneous/Random-Tab",
         "community": "https://discord.gg/Txn2CA5dHF"
-    }
+    },
+	"tags": [
+		"content", "online"
+	]
 }
