@@ -393,7 +393,7 @@ bool RandomLayer::init() {
     CCScale9Sprite* togglesBG = CCScale9Sprite::create("square02b_001.png");
     togglesBG->setContentSize({365, 30});
     togglesBG->setPosition({winSize.width/2, winSize.height/2 - 10});
-    togglesBG->setColor({0, 56, 141});
+    togglesBG->setColor({0, 46, 117});
 
     toggles->updateLayout();
 
@@ -409,7 +409,7 @@ bool RandomLayer::init() {
     CCScale9Sprite* difficultiesBG = CCScale9Sprite::create("square02b_001.png");
     difficultiesBG->setContentSize({365, 50});
     difficultiesBG->setPosition({winSize.width/2, winSize.height/2 - 60});
-    difficultiesBG->setColor({0, 56, 141});
+    difficultiesBG->setColor({0, 36, 91});
 
     CCMenu* versionsMenu = CCMenu::create();
     versionsMenu->setContentSize({350, 50});
@@ -440,7 +440,7 @@ bool RandomLayer::init() {
     CCScale9Sprite* versionsBG = CCScale9Sprite::create("square02b_001.png");
     versionsBG->setContentSize({365, 50});
     versionsBG->setPosition({winSize.width/2, winSize.height/2 - 120});
-    versionsBG->setColor({0, 56, 141});
+    versionsBG->setColor({0, 31, 79});
 
     m_difficultiesMenu->addChild(createDifficultyButton("difficulty_01_btn_001.png", 1));
     m_difficultiesMenu->addChild(createDifficultyButton("difficulty_02_btn_001.png", 2));
