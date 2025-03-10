@@ -737,8 +737,8 @@ GJGameLevel* RandomLayer::levelFromData(std::string data) {
     level->m_starsRequested = utils::numFromString<int>(levelData[39]).unwrapOr(0);
     level->m_isEpic = utils::numFromString<int>(levelData[42]).unwrapOr(0);
     level->m_demonDifficulty = utils::numFromString<int>(levelData[43]).unwrapOr(0);
-    level->m_songIDs = utils::numFromString<int>(levelData[52]).unwrapOr(0);
-    level->m_sfxIDs = utils::numFromString<int>(levelData[53]).unwrapOr(0);
+    level->m_songIDs = levelData[52];
+    level->m_sfxIDs = levelData[53];
 
     return level;
 }
