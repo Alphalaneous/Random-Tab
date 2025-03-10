@@ -553,10 +553,7 @@ int RandomLayer::getRandomNumber(int lower, int upper) {
 }
 
 int RandomLayer::getRandomFromFilters(int versionOverride, bool randomOverride) {
-    if (m_completedOnly && m_ratedOnly) {
-        return 0;
-    }
-    else if (m_ratedOnly && !randomOverride) {
+    if (m_ratedOnly && !randomOverride) {
         std::vector<int> validLevels;
 
         auto insertLevels = [&](int version) {
@@ -592,9 +589,6 @@ int RandomLayer::getRandomFromFilters(int versionOverride, bool randomOverride) 
         }
         return validLevels[getRandomNumber(0, validLevels.size() - 1)];
 
-    }
-    else if (m_completedOnly) {
-        return 0;
     }
     else {
         std::vector<std::pair<int, int>> ranges;
@@ -692,7 +686,6 @@ void RandomLayer::onRandomList(CCObject* object) {
 
 GJGameLevel* RandomLayer::levelFromData(std::string data) {
     if (data == "-1") return nullptr;
-    GJGameLevel* level = GJGameLevel::create();
 
     std::vector<std::string> parts = utils::string::split(data, "#");
     std::string levelsStr = parts[0];
@@ -714,8 +707,14 @@ GJGameLevel* RandomLayer::levelFromData(std::string data) {
     std::vector<std::string> levels = utils::string::split(levelsStr, "|");
     if (levels.size() == 0) return nullptr;
     std::string firstLevel = levels[0];
-
     std::unordered_map<int, std::string> levelData = parseLevel(firstLevel);
+    
+    GJGameLevel* level = nullptr;
+    CCObject* levelObject = GameLevelManager::sharedState()->m_onlineLevels->objectForKey(levelData[1]);
+
+    if (levelObject) level = static_cast<GJGameLevel*>(levelObject);
+    else level = GJGameLevel::create();
+
     level->m_levelID = utils::numFromString<int>(levelData[1]).unwrapOr(0);
     level->m_levelName = levelData[2];
     level->m_levelDesc = levelData[3];
@@ -767,13 +766,15 @@ void RandomLayer::goToRandomLevel(float dt) {
     if (!m_waitAlert->getParent()) {
         m_waitAlert->show();
     }
-    if (isVersionSelected(12) || isVersionSelected(-2)) {
+    if ((isVersionSelected(12) || isVersionSelected(-2)) && m_ratedOnly) {
         std::string ids = getRandomIDsList(1000, true);
         makeSearchFor(ids, 10, [this, ids] (GJGameLevel* level) {
             if (level) {
                 m_waitAlert->removeFromParent();
                 LevelInfoLayer* lel = LevelInfoLayer::create(level, false);
-                lel->downloadLevel();
+                if (lel->m_level->m_levelString.size() == 0) {
+                    lel->downloadLevel();
+                }
                 auto scene = CCScene::create();
                 scene->addChild(lel);
 
@@ -792,7 +793,9 @@ void RandomLayer::goToRandomLevel(float dt) {
             if (level) {
                 m_waitAlert->removeFromParent();
                 LevelInfoLayer* lel = LevelInfoLayer::create(level, false);
-                lel->downloadLevel();
+                if (lel->m_level->m_levelString.size() == 0) {
+                    lel->downloadLevel();
+                }                
                 auto scene = CCScene::create();
                 scene->addChild(lel);
 
