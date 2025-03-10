@@ -330,8 +330,7 @@ bool RandomLayer::init() {
     CCScale9Sprite* searchBG = CCScale9Sprite::create("square02b_001.png");
     searchBG->setContentSize({365, 50});
     searchBG->setPosition({winSize.width/2, winSize.height/2 + 60});
-    searchBG->setColor({0, 0, 0});
-    searchBG->setOpacity(100);
+    searchBG->setColor({0, 56, 141});
 
     addChild(searchBG);
 
@@ -394,8 +393,7 @@ bool RandomLayer::init() {
     CCScale9Sprite* togglesBG = CCScale9Sprite::create("square02b_001.png");
     togglesBG->setContentSize({365, 30});
     togglesBG->setPosition({winSize.width/2, winSize.height/2 - 10});
-    togglesBG->setColor({0, 0, 0});
-    togglesBG->setOpacity(100);
+    togglesBG->setColor({0, 56, 141});
 
     toggles->updateLayout();
 
@@ -408,13 +406,10 @@ bool RandomLayer::init() {
     m_difficultiesMenu->setLayout(RowLayout::create()->setGap(20));
     m_difficultiesMenu->setZOrder(1);
 
-    
-
     CCScale9Sprite* difficultiesBG = CCScale9Sprite::create("square02b_001.png");
     difficultiesBG->setContentSize({365, 50});
     difficultiesBG->setPosition({winSize.width/2, winSize.height/2 - 60});
-    difficultiesBG->setColor({0, 0, 0});
-    difficultiesBG->setOpacity(100);
+    difficultiesBG->setColor({0, 56, 141});
 
     CCMenu* versionsMenu = CCMenu::create();
     versionsMenu->setContentSize({350, 50});
@@ -445,8 +440,7 @@ bool RandomLayer::init() {
     CCScale9Sprite* versionsBG = CCScale9Sprite::create("square02b_001.png");
     versionsBG->setContentSize({365, 50});
     versionsBG->setPosition({winSize.width/2, winSize.height/2 - 120});
-    versionsBG->setColor({0, 0, 0});
-    versionsBG->setOpacity(100);
+    versionsBG->setColor({0, 56, 141});
 
     m_difficultiesMenu->addChild(createDifficultyButton("difficulty_01_btn_001.png", 1));
     m_difficultiesMenu->addChild(createDifficultyButton("difficulty_02_btn_001.png", 2));
