@@ -1,3 +1,6 @@
+# 2.1.2
+- Fix a crash
+
 # 2.1.1
 - Tweak some colors
 

@@ -823,7 +823,7 @@ void RandomLayer::onClearFilters(CCObject* object) {
                 vBtn->setColor({125, 125, 125});
             }
             m_ratedToggle->m_toggler->toggle(false);
-            m_completedToggle->m_toggler->toggle(false);
+            //m_completedToggle->m_toggler->toggle(false);
 
             m_difficultiesMenu->setOpacity(127);
             m_difficultiesMenu->setColor({125, 125, 125});
