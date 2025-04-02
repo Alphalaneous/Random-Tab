@@ -1,3 +1,6 @@
+# 2.1.3
+- iOS support
+
 # 2.1.2
 - Fix a crash
 
