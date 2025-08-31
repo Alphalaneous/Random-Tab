@@ -952,7 +952,7 @@ void RandomLayer::keyBackClicked() {
 }
 
 void RandomLayer::onBack(CCObject* object) {
-    CCDirector::sharedDirector()->popScene();
+    CCDirector::sharedDirector()->popSceneWithTransition(0.5f, PopTransition::kPopTransitionFade);
 }
 
 CCScene* RandomLayer::scene() {
