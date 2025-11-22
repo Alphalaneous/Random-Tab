@@ -1,3 +1,8 @@
+# 2.1.4
+- Fix weird filters background
+- New textures
+- New icon
+
 # 2.1.3
 - iOS support
 

@@ -391,7 +391,7 @@ bool RandomLayer::init() {
     //toggles->addChild(m_completedToggle);
 
     CCScale9Sprite* togglesBG = CCScale9Sprite::create("square02b_001.png");
-    togglesBG->setContentSize({365, 30});
+    togglesBG->setContentSize({365, 36});
     togglesBG->setPosition({winSize.width/2, winSize.height/2 - 10});
     togglesBG->setColor({0, 46, 117});
 
