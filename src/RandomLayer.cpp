@@ -253,7 +253,7 @@ bool RandomLayer::init() {
     }, false);
 
     unsigned long fileSize = 0;
-    unsigned char* buffer = CCFileUtils::sharedFileUtils()->getFileData("LevelStats.dat", "rb", &fileSize);    
+    unsigned char* buffer = CCFileUtils::get()->getFileData("LevelStats.dat", "rb", &fileSize);    
 
     if (buffer && fileSize != 0) {
         std::string data = std::string(reinterpret_cast<char*>(buffer), fileSize);
@@ -660,8 +660,7 @@ void RandomLayer::onRandomListReplace(CCObject* object) {
     auto scene = CCScene::create();
     scene->addChild(browserLayer);
 
-	auto transitionFade = CCTransitionFade::create(0.5, scene);
-    CCDirector::sharedDirector()->replaceScene(transitionFade);
+    CCDirector::get()->replaceScene(scene);
 }
 
 void RandomLayer::onRandomList(CCObject* object) {
@@ -675,7 +674,7 @@ void RandomLayer::onRandomList(CCObject* object) {
     scene->addChild(browserLayer);
 
 	auto transitionFade = CCTransitionFade::create(0.5, scene);
-    CCDirector::sharedDirector()->pushScene(transitionFade);
+    CCDirector::get()->pushScene(transitionFade);
 }
 
 GJGameLevel* RandomLayer::levelFromData(std::string data) {
@@ -704,7 +703,7 @@ GJGameLevel* RandomLayer::levelFromData(std::string data) {
     std::unordered_map<int, std::string> levelData = parseLevel(firstLevel);
     
     GJGameLevel* level = nullptr;
-    CCObject* levelObject = GameLevelManager::sharedState()->m_onlineLevels->objectForKey(levelData[1]);
+    CCObject* levelObject = GameLevelManager::get()->m_onlineLevels->objectForKey(levelData[1]);
 
     if (levelObject) level = static_cast<GJGameLevel*>(levelObject);
     else level = GJGameLevel::create();
@@ -773,7 +772,7 @@ void RandomLayer::goToRandomLevel(float dt) {
                 scene->addChild(lel);
 
                 auto transitionFade = CCTransitionFade::create(0.5, scene);
-                CCDirector::sharedDirector()->pushScene(transitionFade);
+                CCDirector::get()->pushScene(transitionFade);
             }
             else {
                 scheduleOnce(schedule_selector(RandomLayer::goToRandomLevel), 1);
@@ -794,7 +793,7 @@ void RandomLayer::goToRandomLevel(float dt) {
                 scene->addChild(lel);
 
                 auto transitionFade = CCTransitionFade::create(0.5, scene);
-                CCDirector::sharedDirector()->pushScene(transitionFade);
+                CCDirector::get()->pushScene(transitionFade);
             }
             else {
                 scheduleOnce(schedule_selector(RandomLayer::goToRandomLevel), 1);
@@ -848,6 +847,12 @@ void RandomLayer::ratedAnd2p2Check() {
         m_listButton->setColor({255, 255, 255});
         m_listButton->setOpacity(255);
     }
+
+    if (isVersionSelected(-2)) {
+        m_difficultiesMenu->setOpacity(125);
+        m_difficultiesMenu->setColor({125, 125, 125});
+        m_difficultiesMenu->setEnabled(false);
+    }
 }
 
 
@@ -896,12 +901,19 @@ void RandomLayer::onVersionButton(CCObject* object) {
 
     CCMenuItemSpriteExtra* btn = static_cast<CCMenuItemSpriteExtra*>(object);
 
+    m_difficultiesMenu->setOpacity(255);
+    m_difficultiesMenu->setColor({255, 255, 255});
+    m_difficultiesMenu->setEnabled(true);
+
     if (isVersionSelected(btn->getTag())) {
         btn->setColor({125, 125, 125});
         removeVersion(btn->getTag());
     }
     else {
         if (btn->getTag() == -2) {
+            m_difficultiesMenu->setOpacity(127);
+            m_difficultiesMenu->setColor({125, 125, 125});
+            m_difficultiesMenu->setEnabled(false);
             m_filteredVersions.clear();
             for (CCMenuItemSpriteExtra* vBtn : CCArrayExt<CCMenuItemSpriteExtra*>(m_versionButtons)) {
                 vBtn->setColor({125, 125, 125});
@@ -952,7 +964,7 @@ void RandomLayer::keyBackClicked() {
 }
 
 void RandomLayer::onBack(CCObject* object) {
-    CCDirector::sharedDirector()->popSceneWithTransition(0.5f, PopTransition::kPopTransitionFade);
+    CCDirector::get()->popSceneWithTransition(0.5f, PopTransition::kPopTransitionFade);
 }
 
 CCScene* RandomLayer::scene() {

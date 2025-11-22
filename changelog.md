@@ -1,3 +1,6 @@
+# 2.1.5
+- Minor Bugfixes
+
 # 2.1.4
 - Fix weird filters background
 - New textures
