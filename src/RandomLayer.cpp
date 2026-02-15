@@ -1,6 +1,5 @@
 #include "RandomLayer.hpp"
 #include <Geode/modify/LevelBrowserLayer.hpp>
-#include <random>
 
 class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 
@@ -43,7 +42,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 			}
 		}
 		
-		CCSprite* bg = CCSprite::create("background.png"_spr);
+		auto bg = CCSprite::create("background.png"_spr);
 		bg->setUserObject("width", CCFloat::create(bg->getContentSize().width));
 		bg->setUserObject("height", CCFloat::create(bg->getContentSize().height));
 		bg->setID("bg-overlay"_spr);
@@ -56,7 +55,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
         bg->setZOrder(-1);
         bg->setAnchorPoint({0, 0});
 		bg->setRotation(10);
-		CCSize winSize = CCDirector::get()->getWinSize();
+		auto winSize = CCDirector::get()->getWinSize();
 
 		bg->setPosition({-winSize.width/2, -winSize.height/2});
 
@@ -72,7 +71,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 
 	void animateBG(float dt){
 
-		CCSprite* bg = typeinfo_cast<CCSprite*>(getChildByID("bg-overlay"_spr));
+		auto bg = typeinfo_cast<CCSprite*>(getChildByID("bg-overlay"_spr));
 
 		auto width = static_cast<CCFloat*>(bg->getUserObject("width"))->getValue();
 		auto height = static_cast<CCFloat*>(bg->getUserObject("height"))->getValue();
@@ -113,15 +112,15 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 	}
 };
 
-Toggle* createToggle(std::string text, CCNode* target, SEL_MenuHandler callback, std::string savedValue) {
-    Toggle* menu = Toggle::create();
+Toggle* createToggle(ZStringView text, CCNode* target, SEL_MenuHandler callback, ZStringView savedValue) {
+    auto menu = Toggle::create();
     menu->ignoreAnchorPointForPosition(false);
     menu->setContentSize({180, 30});
     menu->setLayout(RowLayout::create()->setGap(0)->setAxisAlignment(AxisAlignment::Start)->setAutoScale(false));
 
-    CCMenuItemToggler* toggle = CCMenuItemToggler::createWithStandardSprites(target, callback, 0.5f);
+    auto toggle = CCMenuItemToggler::createWithStandardSprites(target, callback, 0.5f);
     toggle->toggle(Mod::get()->getSavedValue<bool>(savedValue));
-    CCLabelBMFont* label = CCLabelBMFont::create(text.c_str(), "bigFont.fnt");
+    auto label = CCLabelBMFont::create(text.c_str(), "bigFont.fnt");
     label->setAnchorPoint({0, 0.5f});
     label->setScale(0.4f);
 
@@ -136,24 +135,24 @@ Toggle* createToggle(std::string text, CCNode* target, SEL_MenuHandler callback,
     return menu;
 }
 
-std::unordered_map<int, std::string> RandomLayer::parseLevel(const std::string& str) {
+std::unordered_map<int, std::string> RandomLayer::parseLevel(ZStringView str) {
     std::unordered_map<int, std::string> result;
 
     size_t start = 0;
     int delimiterCount = 0;
 
     for (size_t i = 0; i <= str.length(); ++i) {
-        if (i == str.length() || str[i] == ':') {
+        if (i == str.length() || str.view()[i] == ':') {
             delimiterCount++;
 
             if (delimiterCount == 2 || i == str.length()) {
-                auto segment = str.substr(start, i - start);
+                std::string_view segment = str.view().substr(start, i - start);
                 
                 size_t delimPos = segment.find(':');
                 if (delimPos != std::string::npos) {
 
                     int first = utils::numFromString<int>(segment.substr(0, delimPos)).unwrapOr(0);
-                    std::string second = segment.substr(delimPos + 1);
+                    std::string_view second = segment.substr(delimPos + 1);
 
                     result[first] = second;
                 }
@@ -167,24 +166,24 @@ std::unordered_map<int, std::string> RandomLayer::parseLevel(const std::string& 
     return result;
 }
 
-std::unordered_map<int, std::unordered_map<int, std::vector<int>>> RandomLayer::parse(const std::string& str) {
+std::unordered_map<int, std::unordered_map<int, std::vector<int>>> RandomLayer::parse(ZStringView str) {
     std::unordered_map<int, std::unordered_map<int, std::vector<int>>> result;
 
     size_t start = 0;
     int delimiterCount = 0;
 
     for (size_t i = 0; i <= str.length(); ++i) {
-        if (i == str.length() || str[i] == ',') {
+        if (i == str.length() || str.view()[i] == ',') {
             delimiterCount++;
 
             if (delimiterCount == 2 || i == str.length()) {
-                auto segment = str.substr(start, i - start);
+                std::string_view segment = str.view().substr(start, i - start);
                 
                 size_t delimPos = segment.find(',');
                 if (delimPos != std::string::npos) {
 
-                    std::string first = segment.substr(0, delimPos);
-                    std::string second = segment.substr(delimPos + 1);
+                    std::string_view first = segment.substr(0, delimPos);
+                    std::string_view second = segment.substr(delimPos + 1);
 
                     int ID = utils::numFromString<int>(first).unwrapOr(0);
                     int difficulty = utils::numFromString<int>(second).unwrapOr(0);
@@ -231,7 +230,7 @@ std::unordered_map<int, std::unordered_map<int, std::vector<int>>> RandomLayer::
 }
 
 int RandomLayer::betweenWhich(int id) {
-    for (auto const& [k, v] : m_versionData) {
+    for (const auto& [k, v] : m_versionData) {
         if (id >= v.first && id <= v.second) {
             return k;
         }
@@ -242,12 +241,12 @@ int RandomLayer::betweenWhich(int id) {
 bool RandomLayer::init() {
     if (!CCLayer::init()) return false;
 
-    CCSize winSize = CCDirector::get()->getWinSize();
+    auto winSize = CCDirector::get()->getWinSize();
 
     m_waitAlert = geode::createQuickPopup("Finding Level", "Please wait...", "Cancel", nullptr, [this] (FLAlertLayer*, bool confirm) {
         m_cancelled = true;
-        for (auto const& [k, v] : m_listeners) {
-            m_listeners[k].getFilter().cancel();
+        for (const auto& [k, v] : m_listeners) {
+            m_listeners[k].cancel();
             m_listeners.erase(k);
         }
     }, false);
@@ -266,32 +265,32 @@ bool RandomLayer::init() {
     m_filteredVersions = Mod::get()->getSavedValue<std::vector<int>>("version-filter");
     m_filteredDifficulties = Mod::get()->getSavedValue<std::vector<int>>("difficulty-filter");
 
-    CCMenu* backMenu = CCMenu::create();
+    auto backMenu = CCMenu::create();
     backMenu->setContentSize({48, 48});
     backMenu->ignoreAnchorPointForPosition(false);
     backMenu->setAnchorPoint({0, 1});
     backMenu->setPosition({0, winSize.height});
 
-    CCSprite* backSprite = CCSprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
-    CCMenuItemSpriteExtra* backBtn = CCMenuItemSpriteExtra::create(backSprite, this, menu_selector(RandomLayer::onBack));
+    auto backSprite = CCSprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
+    auto backBtn = CCMenuItemSpriteExtra::create(backSprite, this, menu_selector(RandomLayer::onBack));
     backBtn->setPosition(backMenu->getContentSize()/2);
 
     backMenu->addChild(backBtn);
 
-    CCMenu* clearFiltersMenu = CCMenu::create();
+    auto clearFiltersMenu = CCMenu::create();
     clearFiltersMenu->setContentSize({48, 48});
     clearFiltersMenu->ignoreAnchorPointForPosition(false);
     clearFiltersMenu->setAnchorPoint({1, 1});
     clearFiltersMenu->setPosition({winSize.width, winSize.height});
 
-    CCSprite* clearSprite = CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
+    auto clearSprite = CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
     clearSprite->setScale(0.8f);
-    CCMenuItemSpriteExtra* clearBtn = CCMenuItemSpriteExtra::create(clearSprite, this, menu_selector(RandomLayer::onClearFilters));
+    auto clearBtn = CCMenuItemSpriteExtra::create(clearSprite, this, menu_selector(RandomLayer::onClearFilters));
     clearBtn->setPosition(clearFiltersMenu->getContentSize()/2);
     
     clearFiltersMenu->addChild(clearBtn);
 
-    CCSprite* background = CCSprite::create("GJ_gradientBG.png");
+    auto background = CCSprite::create("GJ_gradientBG.png");
     background->setPosition({-5, -5});
 
     float scaleX = (winSize.width + 10) / background->getContentWidth();
@@ -303,38 +302,38 @@ bool RandomLayer::init() {
     background->setColor({0, 102, 255});
     background->setAnchorPoint({0, 0});
 
-    CCSprite* logo = CCSprite::create("random-tab-logo.png"_spr);
+    auto logo = CCSprite::create("random-tab-logo.png"_spr);
     logo->setPosition({winSize.width/2, winSize.height - 40});
     addChild(logo);
 
-    CCSprite* bottomLeftCorner = CCSprite::createWithSpriteFrameName("GJ_sideArt_001.png");
+    auto bottomLeftCorner = CCSprite::createWithSpriteFrameName("GJ_sideArt_001.png");
     bottomLeftCorner->setPosition({-1, -1});
     bottomLeftCorner->setAnchorPoint({0, 0});
 
-    CCSprite* bottomRightCorner = CCSprite::createWithSpriteFrameName("GJ_sideArt_001.png");
+    auto bottomRightCorner = CCSprite::createWithSpriteFrameName("GJ_sideArt_001.png");
     bottomRightCorner->setPosition({winSize.width + 1, -1});
     bottomRightCorner->setAnchorPoint({1, 0});
     bottomRightCorner->setFlipX(true);
 
-    CCSprite* topLeftCorner = CCSprite::createWithSpriteFrameName("GJ_sideArt_001.png");
+    auto topLeftCorner = CCSprite::createWithSpriteFrameName("GJ_sideArt_001.png");
     topLeftCorner->setPosition({-1, winSize.height + 1});
     topLeftCorner->setAnchorPoint({0, 1});
     topLeftCorner->setFlipY(true);
 
-    CCSprite* topRightCorner = CCSprite::createWithSpriteFrameName("GJ_sideArt_001.png");
+    auto topRightCorner = CCSprite::createWithSpriteFrameName("GJ_sideArt_001.png");
     topRightCorner->setPosition({winSize.width + 1, winSize.height + 1});
     topRightCorner->setAnchorPoint({1, 1});
     topRightCorner->setFlipX(true);
     topRightCorner->setFlipY(true);
 
-    CCScale9Sprite* searchBG = CCScale9Sprite::create("square02b_001.png");
+    auto searchBG = geode::NineSlice::create("square02b_001.png");
     searchBG->setContentSize({365, 50});
     searchBG->setPosition({winSize.width/2, winSize.height/2 + 60});
     searchBG->setColor({0, 56, 141});
 
     addChild(searchBG);
 
-    CCMenu* searchMenu = CCMenu::create();
+    auto searchMenu = CCMenu::create();
     searchMenu->setContentSize({365, 50});
     searchMenu->setPosition({winSize.width/2, winSize.height/2 + 60});
     searchMenu->ignoreAnchorPointForPosition(false);
@@ -343,8 +342,8 @@ bool RandomLayer::init() {
 
     addChild(searchMenu);
 
-    CCSprite* listButtonSpr = CCSprite::createWithSpriteFrameName("GJ_longBtn03_001.png");
-    CCLabelBMFont* listButtonLabel = CCLabelBMFont::create("Randomize Them!", "bigFont.fnt");
+    auto listButtonSpr = CCSprite::createWithSpriteFrameName("GJ_longBtn03_001.png");
+    auto listButtonLabel = CCLabelBMFont::create("Randomize Them!", "bigFont.fnt");
     listButtonLabel->setPosition(listButtonSpr->getContentSize()/2);
     listButtonLabel->setScale(0.5f);
     listButtonLabel->setPositionY(listButtonLabel->getPositionY() + 1);
@@ -354,14 +353,14 @@ bool RandomLayer::init() {
     listButtonSpr->setCascadeColorEnabled(true);
     listButtonSpr->setCascadeOpacityEnabled(true);
 
-    CCSprite* randomLevelSpr = CCSprite::createWithSpriteFrameName("GJ_longBtn03_001.png");
-    CCLabelBMFont* randomLevelLabel = CCLabelBMFont::create("I'm Feeling Lucky!", "bigFont.fnt");
+    auto randomLevelSpr = CCSprite::createWithSpriteFrameName("GJ_longBtn03_001.png");
+    auto randomLevelLabel = CCLabelBMFont::create("I'm Feeling Lucky!", "bigFont.fnt");
     randomLevelLabel->setPosition(randomLevelSpr->getContentSize()/2);
     randomLevelLabel->setScale(0.5f);
     randomLevelLabel->setPositionY(randomLevelLabel->getPositionY() + 1);
     randomLevelSpr->addChild(randomLevelLabel);
 
-    CCMenuItemSpriteExtra* randomLevelButton = CCMenuItemSpriteExtra::create(randomLevelSpr, this, menu_selector(RandomLayer::onRandomLevel));
+    auto randomLevelButton = CCMenuItemSpriteExtra::create(randomLevelSpr, this, menu_selector(RandomLayer::onRandomLevel));
     randomLevelSpr->setCascadeColorEnabled(true);
     randomLevelSpr->setCascadeOpacityEnabled(true);
 
@@ -370,11 +369,11 @@ bool RandomLayer::init() {
 
     searchMenu->updateLayout();
 
-    CCLabelBMFont* filtersLabel = CCLabelBMFont::create("Filters", "bigFont.fnt");
+    auto filtersLabel = CCLabelBMFont::create("Filters", "bigFont.fnt");
     filtersLabel->setPosition({winSize.width/2, winSize.height/2 + 20});
     filtersLabel->setScale(0.5f);
 
-    CCNode* toggles = CCNode::create();
+    auto toggles = CCNode::create();
     toggles->setContentSize({360, 30});
     toggles->setPosition({winSize.width/2, winSize.height/2 - 10});
     toggles->ignoreAnchorPointForPosition(false);
@@ -390,7 +389,7 @@ bool RandomLayer::init() {
     m_completedOnly = Mod::get()->getSavedValue<bool>("completed-filter");
     //toggles->addChild(m_completedToggle);
 
-    CCScale9Sprite* togglesBG = CCScale9Sprite::create("square02b_001.png");
+    auto togglesBG = geode::NineSlice::create("square02b_001.png");
     togglesBG->setContentSize({365, 36});
     togglesBG->setPosition({winSize.width/2, winSize.height/2 - 10});
     togglesBG->setColor({0, 46, 117});
@@ -406,12 +405,12 @@ bool RandomLayer::init() {
     m_difficultiesMenu->setLayout(RowLayout::create()->setGap(20));
     m_difficultiesMenu->setZOrder(1);
 
-    CCScale9Sprite* difficultiesBG = CCScale9Sprite::create("square02b_001.png");
+    auto difficultiesBG = geode::NineSlice::create("square02b_001.png");
     difficultiesBG->setContentSize({365, 50});
     difficultiesBG->setPosition({winSize.width/2, winSize.height/2 - 60});
     difficultiesBG->setColor({0, 36, 91});
 
-    CCMenu* versionsMenu = CCMenu::create();
+    auto versionsMenu = CCMenu::create();
     versionsMenu->setContentSize({350, 50});
     versionsMenu->setPosition({winSize.width/2, winSize.height/2 - 120});
     versionsMenu->ignoreAnchorPointForPosition(false);
@@ -437,7 +436,7 @@ bool RandomLayer::init() {
 
     versionsMenu->updateLayout();
 
-    CCScale9Sprite* versionsBG = CCScale9Sprite::create("square02b_001.png");
+    auto versionsBG = geode::NineSlice::create("square02b_001.png");
     versionsBG->setContentSize({365, 50});
     versionsBG->setPosition({winSize.width/2, winSize.height/2 - 120});
     versionsBG->setColor({0, 31, 79});
@@ -487,12 +486,12 @@ bool RandomLayer::init() {
     return true;
 }
 
-CCMenuItemSpriteExtra* RandomLayer::createVersionButton(std::string label, int version) {
+CCMenuItemSpriteExtra* RandomLayer::createVersionButton(ZStringView label, int version) {
 
-    CCLabelBMFont* versionLabel = CCLabelBMFont::create(label.c_str(), "bigFont.fnt");
+    auto versionLabel = CCLabelBMFont::create(label.c_str(), "bigFont.fnt");
     versionLabel->setScale(0.5);
 
-    CCMenuItemSpriteExtra* btn = CCMenuItemSpriteExtra::create(versionLabel, this, menu_selector(RandomLayer::onVersionButton));
+    auto btn = CCMenuItemSpriteExtra::create(versionLabel, this, menu_selector(RandomLayer::onVersionButton));
     if (!isVersionSelected(version)) {
         btn->setColor({125, 125, 125});
     }
@@ -504,12 +503,12 @@ CCMenuItemSpriteExtra* RandomLayer::createVersionButton(std::string label, int v
     return btn;
 }
 
-CCMenuItemSpriteExtra* RandomLayer::createDifficultyButton(std::string texture, int difficulty) {
+CCMenuItemSpriteExtra* RandomLayer::createDifficultyButton(ZStringView texture, int difficulty) {
 
-    CCSprite* difficultySprite = CCSprite::createWithSpriteFrameName(texture.c_str());
+    auto difficultySprite = CCSprite::createWithSpriteFrameName(texture.c_str());
     difficultySprite->setScale(0.8f);
 
-    CCMenuItemSpriteExtra* btn = CCMenuItemSpriteExtra::create(difficultySprite, this, menu_selector(RandomLayer::onDifficultyButton));
+    auto btn = CCMenuItemSpriteExtra::create(difficultySprite, this, menu_selector(RandomLayer::onDifficultyButton));
     if (!isDifficultySelected(difficulty)) {
         btn->setColor({125, 125, 125});
     }
@@ -534,16 +533,6 @@ void RandomLayer::removeVersion(int version) {
 
 void RandomLayer::removeDifficulty(int difficulty) {
     m_filteredDifficulties.erase(std::remove(m_filteredDifficulties.begin(), m_filteredDifficulties.end(), difficulty), m_filteredDifficulties.end());
-}
-
-int RandomLayer::getRandomNumber(int lower, int upper) {
-    if (lower > upper) std::swap(lower, upper);
-    
-    static std::random_device rd; 
-    static std::mt19937 gen(rd()); 
-
-    std::uniform_int_distribution<> dist(lower, upper);
-    return dist(gen);
 }
 
 int RandomLayer::getRandomFromFilters(int versionOverride, bool randomOverride) {
@@ -581,7 +570,7 @@ int RandomLayer::getRandomFromFilters(int versionOverride, bool randomOverride) 
         if (validLevels.empty()) {
             return 0;
         }
-        return validLevels[getRandomNumber(0, validLevels.size() - 1)];
+        return validLevels[utils::random::generate(0, validLevels.size() - 1)];
 
     }
     else {
@@ -598,15 +587,15 @@ int RandomLayer::getRandomFromFilters(int versionOverride, bool randomOverride) 
         int randomRange = 0;
         int randomID = 0;
         if (m_filteredVersions.size() > 1) {
-            int randomRange = getRandomNumber(0, ranges.size() - 1);
+            int randomRange = utils::random::generate(0, ranges.size() - 1);
             std::pair<int, int> range = ranges[randomRange];
-            randomID = getRandomNumber(range.first, range.second);
+            randomID = utils::random::generate(range.first, range.second);
         }
         else if (m_filteredVersions.size() == 1) {
-            randomID = getRandomNumber(ranges[0].first, ranges[0].second);
+            randomID = utils::random::generate(ranges[0].first, ranges[0].second);
         }
         if (m_filteredVersions.size() == 0) {
-            randomID = getRandomNumber(128, 130000000);
+            randomID = utils::random::generate(128, 130000000);
         }
 
         return randomID;
@@ -616,7 +605,7 @@ int RandomLayer::getRandomFromFilters(int versionOverride, bool randomOverride) 
 int RandomLayer::getRandomID() {
     int versionOverride = -1;
     if (isVersionSelected(-2)) {
-        versionOverride = getRandomNumber(0, m_versionData.size() - 2);
+        versionOverride = utils::random::generate(0, m_versionData.size() - 2);
     }
 
     if (isVersionSelected(12)) {
@@ -634,7 +623,7 @@ std::string RandomLayer::getRandomIDsList(int amountOverride, bool allow2p2) {
     int offset = 2;
     if (allow2p2) offset = 1;
     if (isVersionSelected(-2)) {
-        versionOverride = getRandomNumber(0, m_versionData.size() - offset);
+        versionOverride = utils::random::generate(0, m_versionData.size() - offset);
     }
 
     int amount = 100;
@@ -677,33 +666,33 @@ void RandomLayer::onRandomList(CCObject* object) {
     CCDirector::get()->pushScene(transitionFade);
 }
 
-GJGameLevel* RandomLayer::levelFromData(std::string data) {
+GJGameLevel* RandomLayer::levelFromData(ZStringView data) {
     if (data == "-1") return nullptr;
 
-    std::vector<std::string> parts = utils::string::split(data, "#");
+    auto parts = utils::string::split(data, "#");
     std::string levelsStr = parts[0];
     std::string creatorsStr = "";
     if (parts.size() > 1) creatorsStr = parts[1];
 
     std::unordered_map<int, std::pair<std::string, int>> accountInformation;
 
-    std::vector<std::string> creatorsData = utils::string::split(creatorsStr, "|");
+    auto creatorsData = utils::string::split(creatorsStr, "|");
 
-    for (std::string creatorPart : creatorsData) {
-        std::vector<std::string> creatorData = utils::string::split(creatorPart, ":");
+    for (const std::string& creatorPart : creatorsData) {
+        auto creatorData = utils::string::split(creatorPart, ":");
         int userID = utils::numFromString<int>(creatorData[0]).unwrapOr(0);
         std::string userName = creatorData[1];
         int accountID = utils::numFromString<int>(creatorData[2]).unwrapOr(0);
         accountInformation[userID] = {userName, accountID};
     }
 
-    std::vector<std::string> levels = utils::string::split(levelsStr, "|");
+    auto levels = utils::string::split(levelsStr, "|");
     if (levels.size() == 0) return nullptr;
     std::string firstLevel = levels[0];
-    std::unordered_map<int, std::string> levelData = parseLevel(firstLevel);
+    auto levelData = parseLevel(firstLevel);
     
     GJGameLevel* level = nullptr;
-    CCObject* levelObject = GameLevelManager::get()->m_onlineLevels->objectForKey(levelData[1]);
+    auto levelObject = GameLevelManager::get()->m_onlineLevels->objectForKey(levelData[1]);
 
     if (levelObject) level = static_cast<GJGameLevel*>(levelObject);
     else level = GJGameLevel::create();
@@ -735,20 +724,22 @@ GJGameLevel* RandomLayer::levelFromData(std::string data) {
     return level;
 }
 
-void RandomLayer::makeSearchFor(std::string ids, int type, std::function<void(GJGameLevel*)> onLoad) {
-    m_listeners[ids].bind([this, onLoad, ids] (web::WebTask::Event* e) {
-        if (web::WebResponse* res = e->getValue()) {
-            if (res->ok() && res->string().isOk()) {
-                onLoad(levelFromData(res->string().unwrap()));
-            }
-        }
-    });
-
+void RandomLayer::makeSearchFor(ZStringView ids, int type, std::function<void(GJGameLevel*)>&& onLoad) {
     auto req = web::WebRequest();
     req.bodyString(fmt::format("str={}&type={}&secret=Wmfd2893gb7", ids, type));
     req.userAgent("");
     req.header("Content-Type", "application/x-www-form-urlencoded");
-    m_listeners[ids].setFilter(req.post("http://www.boomlings.com/database/getGJLevels21.php"));
+
+    m_listeners[ids].spawn(
+        req.post("http://www.boomlings.com/database/getGJLevels21.php"),
+        [this, onLoad, ids] (web::WebResponse value) {
+            if (value.ok()) {
+                auto strRes = value.string();
+                if (!strRes) return;
+                onLoad(levelFromData(strRes.unwrap()));
+            }
+        }
+    );
 }
 
 void RandomLayer::goToRandomLevel(float dt) {
@@ -760,11 +751,11 @@ void RandomLayer::goToRandomLevel(float dt) {
         m_waitAlert->show();
     }
     if ((isVersionSelected(12) || isVersionSelected(-2)) && m_ratedOnly) {
-        std::string ids = getRandomIDsList(1000, true);
+        auto ids = getRandomIDsList(1000, true);
         makeSearchFor(ids, 10, [this, ids] (GJGameLevel* level) {
             if (level) {
                 m_waitAlert->removeFromParent();
-                LevelInfoLayer* lel = LevelInfoLayer::create(level, false);
+                auto lel = LevelInfoLayer::create(level, false);
                 if (lel->m_level->m_levelString.size() == 0) {
                     lel->downloadLevel();
                 }
@@ -781,11 +772,11 @@ void RandomLayer::goToRandomLevel(float dt) {
         });
     }
     else {
-        std::string ids = getRandomIDsList();
+        auto ids = getRandomIDsList();
         makeSearchFor(ids, 19, [this, ids] (GJGameLevel* level) {
             if (level) {
                 m_waitAlert->removeFromParent();
-                LevelInfoLayer* lel = LevelInfoLayer::create(level, false);
+                auto lel = LevelInfoLayer::create(level, false);
                 if (lel->m_level->m_levelString.size() == 0) {
                     lel->downloadLevel();
                 }                
@@ -815,10 +806,10 @@ void RandomLayer::onClearFilters(CCObject* object) {
             m_filteredDifficulties.clear();
             m_ratedOnly = false;
             m_completedOnly = false;
-            for (CCMenuItemSpriteExtra* vBtn : CCArrayExt<CCMenuItemSpriteExtra*>(m_versionButtons)) {
+            for (auto vBtn : CCArrayExt<CCMenuItemSpriteExtra*>(m_versionButtons)) {
                 vBtn->setColor({125, 125, 125});
             }
-            for (CCMenuItemSpriteExtra* vBtn : CCArrayExt<CCMenuItemSpriteExtra*>(m_difficultyButtons)) {
+            for (auto vBtn : CCArrayExt<CCMenuItemSpriteExtra*>(m_difficultyButtons)) {
                 vBtn->setColor({125, 125, 125});
             }
             m_ratedToggle->m_toggler->toggle(false);
@@ -857,7 +848,7 @@ void RandomLayer::ratedAnd2p2Check() {
 
 
 void RandomLayer::onRatedToggle(CCObject* object) {
-    CCMenuItemToggler* toggler = typeinfo_cast<CCMenuItemToggler*>(object);
+    CCMenuItemToggler* toggler = static_cast<CCMenuItemToggler*>(object);
     m_ratedOnly = !toggler->isOn();
 
     if (m_ratedOnly) {
@@ -892,14 +883,14 @@ void RandomLayer::onRatedToggle(CCObject* object) {
 }
 
 void RandomLayer::onCompletedToggle(CCObject* object) {
-    CCMenuItemToggler* toggler = typeinfo_cast<CCMenuItemToggler*>(object);
+    auto toggler = static_cast<CCMenuItemToggler*>(object);
     m_completedOnly = !toggler->isOn();
     Mod::get()->setSavedValue("completed-filter", m_completedOnly);
 }
 
 void RandomLayer::onVersionButton(CCObject* object) {
 
-    CCMenuItemSpriteExtra* btn = static_cast<CCMenuItemSpriteExtra*>(object);
+    auto btn = static_cast<CCMenuItemSpriteExtra*>(object);
 
     m_difficultiesMenu->setOpacity(255);
     m_difficultiesMenu->setColor({255, 255, 255});
@@ -915,7 +906,7 @@ void RandomLayer::onVersionButton(CCObject* object) {
             m_difficultiesMenu->setColor({125, 125, 125});
             m_difficultiesMenu->setEnabled(false);
             m_filteredVersions.clear();
-            for (CCMenuItemSpriteExtra* vBtn : CCArrayExt<CCMenuItemSpriteExtra*>(m_versionButtons)) {
+            for (auto vBtn : CCArrayExt<CCMenuItemSpriteExtra*>(m_versionButtons)) {
                 vBtn->setColor({125, 125, 125});
             }
             if (!m_filteredDifficulties.empty() && m_ratedOnly) {
@@ -935,7 +926,7 @@ void RandomLayer::onVersionButton(CCObject* object) {
 
 void RandomLayer::onDifficultyButton(CCObject* object) {
 
-    CCMenuItemSpriteExtra* btn = static_cast<CCMenuItemSpriteExtra*>(object);
+    auto btn = static_cast<CCMenuItemSpriteExtra*>(object);
 
     if (isDifficultySelected(btn->getTag())) {
         btn->setColor({125, 125, 125});

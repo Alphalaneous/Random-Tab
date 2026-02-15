@@ -1,5 +1,6 @@
+#pragma once
+
 #include <Geode/Geode.hpp>
-#include <Geode/utils/web.hpp>
 
 using namespace geode::prelude;
 
@@ -48,8 +49,8 @@ class RandomLayer : public CCLayer {
     void keyBackClicked();
     void onBack(CCObject* object);
 
-    CCMenuItemSpriteExtra* createVersionButton(std::string label, int version);
-    CCMenuItemSpriteExtra* createDifficultyButton(std::string texture, int difficulty);
+    CCMenuItemSpriteExtra* createVersionButton(ZStringView label, int version);
+    CCMenuItemSpriteExtra* createDifficultyButton(ZStringView texture, int difficulty);
 
     void onVersionButton(CCObject* object);
     void onDifficultyButton(CCObject* object);
@@ -69,14 +70,13 @@ class RandomLayer : public CCLayer {
 
     std::string getRandomIDsList(int amountOverride = 0, bool allow2p2 = false);
     int getRandomID();
-    void makeSearchFor(std::string ids, int type, std::function<void(GJGameLevel*)> onLoad);
+    void makeSearchFor(ZStringView ids, int type, std::function<void(GJGameLevel*)>&& onLoad);
 
-    int getRandomNumber(int lower, int upper);
     int getRandomFromFilters(int versionOverride, bool randomOverride = false);
     int betweenWhich(int id);
-    std::unordered_map<int, std::unordered_map<int, std::vector<int>>> parse(const std::string& str);
-    std::unordered_map<int, std::string> parseLevel(const std::string& str);
-    GJGameLevel* levelFromData(std::string data);
+    std::unordered_map<int, std::unordered_map<int, std::vector<int>>> parse(ZStringView str);
+    std::unordered_map<int, std::string> parseLevel(ZStringView str);
+    GJGameLevel* levelFromData(ZStringView data);
 
     Ref<CCArray> m_versionButtons;
     Ref<CCArray> m_difficultyButtons;
@@ -87,7 +87,7 @@ class RandomLayer : public CCLayer {
     Ref<FLAlertLayer> m_waitAlert;
     bool m_cancelled;
 
-    std::unordered_map<std::string, EventListener<web::WebTask>> m_listeners;
+    StringMap<async::TaskHolder<web::WebResponse>> m_listeners;
 
     Toggle* m_ratedToggle;
     Toggle* m_completedToggle;
