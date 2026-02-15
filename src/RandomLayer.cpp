@@ -243,14 +243,6 @@ bool RandomLayer::init() {
 
     auto winSize = CCDirector::get()->getWinSize();
 
-    m_waitAlert = geode::createQuickPopup("Finding Level", "Please wait...", "Cancel", nullptr, [this] (FLAlertLayer*, bool confirm) {
-        m_cancelled = true;
-        for (const auto& [k, v] : m_listeners) {
-            m_listeners[k].cancel();
-            m_listeners.erase(k);
-        }
-    }, false);
-
     unsigned long fileSize = 0;
     unsigned char* buffer = CCFileUtils::get()->getFileData("LevelStats.dat", "rb", &fileSize);    
 
@@ -743,18 +735,20 @@ void RandomLayer::makeSearchFor(ZStringView ids, int type, std::function<void(GJ
 }
 
 void RandomLayer::goToRandomLevel(float dt) {
-    if (m_cancelled) {
-        m_cancelled = false;
-        return;
+
+    if (!(m_waitAlert && m_waitAlert->getParent())) {
+        m_waitAlert = geode::createQuickPopup("Finding Level", "Please wait...", "Cancel", nullptr, [this] (FLAlertLayer*, bool confirm) {
+            for (const auto& [k, v] : m_listeners) {
+                m_listeners.erase(k);
+            }
+        });
     }
-    if (!m_waitAlert->getParent()) {
-        m_waitAlert->show();
-    }
+
     if ((isVersionSelected(12) || isVersionSelected(-2)) && m_ratedOnly) {
         auto ids = getRandomIDsList(1000, true);
         makeSearchFor(ids, 10, [this, ids] (GJGameLevel* level) {
             if (level) {
-                m_waitAlert->removeFromParent();
+                if (m_waitAlert) m_waitAlert->removeFromParent();
                 auto lel = LevelInfoLayer::create(level, false);
                 if (lel->m_level->m_levelString.size() == 0) {
                     lel->downloadLevel();
@@ -775,7 +769,7 @@ void RandomLayer::goToRandomLevel(float dt) {
         auto ids = getRandomIDsList();
         makeSearchFor(ids, 19, [this, ids] (GJGameLevel* level) {
             if (level) {
-                m_waitAlert->removeFromParent();
+                if (m_waitAlert) m_waitAlert->removeFromParent();
                 auto lel = LevelInfoLayer::create(level, false);
                 if (lel->m_level->m_levelString.size() == 0) {
                     lel->downloadLevel();

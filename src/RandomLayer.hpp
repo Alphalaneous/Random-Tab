@@ -85,7 +85,6 @@ class RandomLayer : public CCLayer {
     CCMenuItemSpriteExtra* m_listButton;
     CCMenu* m_difficultiesMenu;
     Ref<FLAlertLayer> m_waitAlert;
-    bool m_cancelled;
 
     StringMap<async::TaskHolder<web::WebResponse>> m_listeners;
 

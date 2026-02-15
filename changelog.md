@@ -1,3 +1,6 @@
+# 2.1.7
+- Fix a bug with FLAlertLayers not having a background lol
+
 # 2.1.6
 - 2.2081 Support
 
